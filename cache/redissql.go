@@ -20,7 +20,6 @@ func CacheSelect(dest interface{}, query string, args ...interface{}){
 	haskeystr := fmt.Sprintf("%x", haskey) //将[]byte转成16进制
 	if len(tableNames)>0 {
 		firstTableName =PREFIX_TABLE_NAME + tableNames[0][2]
-		fmt.Println(firstTableName)
 		if (common.Rds.HExists(firstTableName, haskeystr).Val()) {
 			//get values from redis
 			redisValue, _ := common.Rds.HGet(firstTableName, haskeystr).Bytes()
@@ -42,6 +41,14 @@ func CacheMustExec(query string, args ...interface{}) sql.Result{
 		common.Rds.Del(delTable)
 	}
 	return common.Db.MustExec(query,args ...)
+}
+
+func ClearRedisTable(tablesname ...interface{}) bool{
+	for _,table :=range tablesname{
+		tablename := PREFIX_TABLE_NAME+table.(string)
+		common.Rds.Del(tablename)
+	}
+	return true
 }
 
 func get(dest interface{}, query string, args ...interface{}) error {

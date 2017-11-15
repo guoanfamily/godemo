@@ -40,7 +40,8 @@ type UserRole struct {
 
 func Frist() []UserRole{
 	//var users []User
-
+	//清空表redis示例
+	//cache.ClearRedisTable("table_usertable","table_a","table_b")
 	//var user User
 	//user.isCache = true
 	//users = append(users,user)
