@@ -3,6 +3,12 @@ package service
 import (
 	"time"
 	"godemo/cache"
+	"godemo/common"
+	"fmt"
+	//"database/sql"
+	"database/sql"
+	//"reflect"
+	//"encoding/json"
 )
 
 type SubObject struct {
@@ -41,7 +47,7 @@ type UserRole struct {
 func Frist() []UserRole{
 	//var users []User
 	//清空表redis示例
-	//cache.ClearRedisTable("table_usertable","table_a","table_b")
+	//cache.ClearRedisTable("usertable","table_a","table_b")
 	//var user User
 	//user.isCache = true
 	//users = append(users,user)
@@ -49,4 +55,34 @@ func Frist() []UserRole{
 	var userroles []UserRole
 	cache.CacheSelect(&userroles,sql)
 	return userroles
+}
+type AccountList struct {
+	Id string
+	Name sql.NullString
+	Simple_spell sql.NullString
+}
+func Acclist() []AccountList{
+	var acc []AccountList
+	sql := "SELECT * FROM city"
+	err := common.Db.Select(&acc,sql)
+	if err!=nil{
+		fmt.Println(err)
+	}
+	return acc
+}
+
+func Save() bool{
+
+	tx := common.Db.MustBegin()
+	defer func(){
+		if r:=recover();r!=nil{
+			fmt.Println("Recovered in testPanic2Error", r)
+			tx.Rollback()
+		}
+	}()
+	tx.MustExec("insert INTO usertable (id,`name`) values(3,'wang')")
+	tx.MustExec("insert INTO usertable (id,`name`) values(4,'wang')")
+	tx.MustExec("insert INTO usertable (id,`name`) values(3,'wang')")
+	tx.Commit()
+	return true
 }

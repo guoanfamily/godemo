@@ -16,6 +16,10 @@ func Router(){
 		return c.String(http.StatusOK, "Hello, World!\n")
 	})
 	e.POST("/users",controller.GetAll)
+
+	e.GET("/save",controller.Save)
+	e.GET("/ws", controller.Hello)
+	e.GET("query",controller.Query)
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
 }
