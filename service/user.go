@@ -2,7 +2,6 @@ package service
 
 import (
 	"time"
-	"godemo/cache"
 	"godemo/common"
 	"fmt"
 	//"database/sql"
@@ -44,16 +43,11 @@ type UserRole struct {
 	Rolename string
 }
 
-func Frist() []UserRole{
-	//var users []User
-	//清空表redis示例
-	//cache.ClearRedisTable("usertable","table_a","table_b")
-	//var user User
-	//user.isCache = true
-	//users = append(users,user)
-	sql := "select u.`name` username,r.`name` rolename from usertable u LEFT JOIN user_role ur on u.id= ur.user_id LEFT JOIN role r on ur.role_id=r.id where true=true"
+func Select() []UserRole{
+
+	sql := "select u.`name` username,r.`name` rolename from usertable u LEFT JOIN user_role ur on u.id= ur.user_id LEFT JOIN role r on ur.role_id=r.id"
 	var userroles []UserRole
-	cache.CacheSelect(&userroles,sql)
+	Query(&userroles,sql)
 	return userroles
 }
 type AccountList struct {

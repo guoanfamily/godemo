@@ -19,7 +19,8 @@ func Router(){
 
 	e.GET("/save",controller.Save)
 	e.GET("/ws", controller.Hello)
-	e.GET("query",controller.Query)
+	e.GET("/query",controller.Query)
+	e.GET("/find",controller.Find)
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
 }
