@@ -15,6 +15,8 @@ func QuerybySql(sql string,args ...interface{}) []interface{}{
 	if(err!=nil){
 		fmt.Println(err)
 	}
+	//延时关闭Rows
+	defer rows.Close()
 	var values []interface{}
 	columns, err := rows.Columns()
 	if err != nil {
@@ -49,6 +51,8 @@ func Query(dict interface{},sql string,args...interface{}) error{
 	if(err!=nil){
 		return err
 	}
+	//延时关闭Rows
+	defer rows.Close()
 	columns, err := rows.Columns()
 	if err != nil {
 		return err
