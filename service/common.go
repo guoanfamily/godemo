@@ -150,6 +150,14 @@ func FilterDbValue(sv reflect.Value,rv interface{}) error {
 				sv.SetBool(true)
 			}
 		}
+	case reflect.Struct:
+		if  rv== nil {
+			//sv.Set(nil)
+
+		}else{
+			value := reflect.ValueOf(rv)
+			sv.Set(value)
+		}
 	}
 	return nil
 }

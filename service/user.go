@@ -43,11 +43,12 @@ type UserRole struct {
 	Rolename string
 	Sex int
 	Status bool
+	CreateTime time.Time
 }
 
 func Select() []UserRole{
 
-	sql := "select u.`name` username,u.sex sex,u.status status,r.`name` rolename from usertable u LEFT JOIN user_role ur on u.id= ur.user_id LEFT JOIN role r on ur.role_id=r.id"
+	sql := "select u.`name` username,u.sex sex,u.status status,r.`name` rolename,u.create_time create_time from usertable u LEFT JOIN user_role ur on u.id= ur.user_id LEFT JOIN role r on ur.role_id=r.id"
 	var userroles []UserRole
 	Query(&userroles,sql)
 	return userroles

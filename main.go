@@ -7,6 +7,8 @@ import (
 	"fmt"
 	 "godemo/router"
 	 "github.com/go-redis/redis"
+	"time"
+	"reflect"
 )
 
 
@@ -30,8 +32,16 @@ func init() {
 	fmt.Println(pong, err)
 }
 
+type St struct {
+	dt time.Time
+	str string
+}
 
 func main(){
+	var st St
+	rt:= reflect.TypeOf(st.dt)
+	//rk := rt.Kind()
+	fmt.Println(rt.Name())
 	router.Router()
 }
 
