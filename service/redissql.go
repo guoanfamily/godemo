@@ -1,4 +1,4 @@
-package cache
+package service
 
 import (
 	"godemo/common"
@@ -25,7 +25,7 @@ func CacheSelect(dest interface{}, query string, args ...interface{}){
 			redisValue, _ := common.Rds.HGet(firstTableName, haskeystr).Bytes()
 			json.Unmarshal(redisValue, dest)
 		}else {
-			common.Db.Select(dest, query, args ...)
+			Query(dest, query, args ...)
 			//set redis value
 			jsonValue, _ := json.Marshal(dest)
 			common.Rds.HSet(firstTableName, haskeystr, jsonValue)
