@@ -6,6 +6,7 @@ import (
 	"godemo/common"
 	"reflect"
 	"strings"
+	"strconv"
 )
 
 func QuerybySql(sql string,args ...interface{}) []interface{}{
@@ -63,13 +64,16 @@ func Query(dict interface{},sql string,args...interface{}) error{
 		//进行数据库返回结果到struct的映射转换,目前统一影射为string,待增加类型映射
 		for i:= range values{
 			structName := strFirstToUpper(columns[i])
-			var structValue string
-			if rv :=*(values[i].(*interface{}));rv!=nil {
-				structValue = fmt.Sprintf("%s",rv)
-			}else {
-				structValue = ""
-			}
-			dictStruct.Elem().FieldByName(structName).SetString(structValue)
+			sv := dictStruct.Elem().FieldByName(structName)
+			rv :=*(values[i].(*interface{}))
+			//var structValue string
+			FilterDbValue(sv,rv)
+			//if rv :=*(values[i].(*interface{}));rv!=nil {
+			//	structValue = fmt.Sprintf("%s",rv)
+			//}else {
+			//	structValue = ""
+			//}
+			//dictStruct.Elem().FieldByName(structName).
 		}
 		structArray.Set(reflect.Append(structArray,dictStruct.Elem()))
 	}
@@ -95,4 +99,70 @@ func strFirstToUpper(str string) string {
 		}
 	}
 	return upperStr
+}
+/*
+数据库类型映射
+ */
+func FilterDbValue(sv reflect.Value,rv interface{}) error {
+	valueType := sv.Type()
+	fmt.Println(valueType.Kind())
+	switch valueType.Kind() {
+	case reflect.Int,reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		if  rv== nil {
+			sv.SetInt(0)
+		}else{
+			value := reflect.ValueOf(rv)
+			str :=byteString(value.Bytes())
+			ivalue,err := strconv.Atoi(str)
+			if err!=nil{
+				panic(err)
+			}
+			sv.SetInt(int64(ivalue))
+		}
+	case reflect.Float32, reflect.Float64:
+		if  rv== nil {
+			sv.SetFloat(0)
+		}else{
+			value := reflect.ValueOf(rv)
+			str :=byteString(value.Bytes())
+			fvalue,err := strconv.ParseFloat(str,64)
+			if err!=nil{
+				panic(err)
+			}
+			sv.SetFloat(fvalue)
+		}
+	case reflect.String:
+		if  rv== nil {
+			sv.SetString("")
+		}else{
+			value := reflect.ValueOf(rv)
+			sv.SetString(string(value.Bytes()))
+		}
+	case reflect.Bool:
+		if  rv== nil {
+			sv.SetBool(false)
+		}else{
+			value := reflect.ValueOf(rv)
+			b := value.Bytes()[0]
+			if b==0 || b==48{
+				sv.SetBool(false)
+			}else{
+				sv.SetBool(true)
+			}
+		}
+	}
+	return nil
+}
+
+
+
+
+
+func byteString(p []byte) string {
+	for i := 0; i < len(p); i++ {
+		if p[i] == 0 {
+			return string(p[0:i])
+		}
+	}
+	return string(p)
 }

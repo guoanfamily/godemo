@@ -41,11 +41,13 @@ type User struct {
 type UserRole struct {
 	Username string
 	Rolename string
+	Sex int
+	Status bool
 }
 
 func Select() []UserRole{
 
-	sql := "select u.`name` username,r.`name` rolename from usertable u LEFT JOIN user_role ur on u.id= ur.user_id LEFT JOIN role r on ur.role_id=r.id"
+	sql := "select u.`name` username,u.sex sex,u.status status,r.`name` rolename from usertable u LEFT JOIN user_role ur on u.id= ur.user_id LEFT JOIN role r on ur.role_id=r.id"
 	var userroles []UserRole
 	Query(&userroles,sql)
 	return userroles
