@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"net/http"
 )
 
 var (
@@ -24,7 +25,21 @@ func init() {
 	User["test2"] = "test2"
 	User["test3"] = "test3"
 }
-
+func SelectPersion(c echo.Context) error{
+	//接收参数，题目id
+	//随机生成候选人
+	//调用ws发送大屏幕候选人
+	for cs, na := range ActiveClients {
+		if na != "" {
+			timestr:= time.Now().Format("2006-01-02 15:04:05")
+			if err := Message.Send(cs.websocket,timestr+"[]"+ cs.clientIP); err != nil {
+				log.Println("Could not send message to ", cs.clientIP, err.Error())
+			}
+		}
+	}
+	//返回手机遥控器
+	return c.JSON(http.StatusOK,nil)
+}
 // Client connection consists of the websocket and the client ip
 type ClientConn struct {
 	websocket *websocket.Conn
@@ -42,28 +57,6 @@ func Hello(c echo.Context) error {
 		log.Println("Number of clients connected:", len(ActiveClients))
 
 		for {
-			// Write
-			timestr:= time.Now().Format("2006-01-02 15:04:05")
-			if err = Message.Send(ws,timestr+"[]"+ client); err != nil {
-				log.Println("Could not send message to ",client , err.Error())
-			}
-			//for cs, na := range ActiveClients {
-			//	if na != "" {
-			//		timestr:= time.Now().Format("2006-01-02 15:04:05")
-			//		if err = Message.Send(cs.websocket,timestr+"[]"+ cs.clientIP); err != nil {
-			//			log.Println("Could not send message to ", cs.clientIP, err.Error())
-			//		}
-			//	}
-			//}
-			//rmsg := "Hello," + sockCli.clientIP
-			//err := websocket.Message.Send(ws, rmsg)
-
-			//if err != nil {
-			//	fmt.Println("senderror")
-			//	log.Fatal(err)
-			//}
-
-			// Read
 			msg := ""
 			err = websocket.Message.Receive(ws, &msg)
 			if err != nil {
