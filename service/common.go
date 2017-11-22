@@ -73,26 +73,30 @@ func Query(dict interface{}, sql string, args ...interface{}) error {
 	}
 	for rows.Next() {
 		rows.Scan(values...)
-		var dictStruct = reflect.New(structArray.Type().Elem())
+		var dictStruct = reflect.New(structArray.Type().Elem()) //UserRole
 		//进行数据库返回结果到struct的映射转换,目前统一影射为string,待增加类型映射
 		for i := range values {
-			structName := strFirstToUpper(columns[i])
-			sv := dictStruct.Elem().FieldByName(structName)
+			structName := strFirstToUpper(columns[i]) //Username
+			sv := dictStruct.Elem().FieldByName(structName) //userrole.Username
 			rv := *(values[i].(*interface{}))
-			//var structValue string
 			FilterDbValue(sv, rv)
-			//if rv :=*(values[i].(*interface{}));rv!=nil {
-			//	structValue = fmt.Sprintf("%s",rv)
-			//}else {
-			//	structValue = ""
-			//}
-			//dictStruct.Elem().FieldByName(structName).
 		}
 		structArray.Set(reflect.Append(structArray, dictStruct.Elem()))
 	}
 	return nil
 }
 
+func Saves() {
+
+}
+func update(){
+
+}
+func insert(dest interface{}){
+	var id string
+	id="1 or 1=1"
+	common.Db.MustExec("select * from user where id=?",id)
+}
 /**
  * 字符串首字母转化为大写 ios_bbbbbbbb -> IosBbbbbbbbb
  */
@@ -164,8 +168,10 @@ func FilterDbValue(sv reflect.Value, rv interface{}) error {
 			}
 		}
 	case reflect.Struct:
-		value := reflect.ValueOf(rv)
-		sv.Set(value)
+		if rv!=nil{
+			value := reflect.ValueOf(rv)
+			sv.Set(value)
+		}
 	}
 	return nil
 }

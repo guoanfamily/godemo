@@ -20,7 +20,7 @@ type myuser struct {
 	Name string
 }
 func Query(c echo.Context) error{
-	sql := "select id,name from usertable"
+	sql := "select * from usertable"
 	return c.JSON(http.StatusOK,service.QuerybySql(sql))
 }
 

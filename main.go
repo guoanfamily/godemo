@@ -33,15 +33,24 @@ func init() {
 }
 
 type St struct {
-	dt time.Time
-	str string
+	Dt time.Time
+	Str string
 }
-
+type User struct {
+	Name string
+	Age  int
+	Id   string
+}
 func main(){
-	var st St
-	rt:= reflect.TypeOf(st.dt)
-	//rk := rt.Kind()
-	fmt.Println(rt.Name())
+	tonydon := &User{"TangXiaodong", 100, "0000123"}
+
+	object := reflect.ValueOf(tonydon)
+	myref := object.Elem()
+	typeOfType := myref.Type()
+	for i:=0; i<myref.NumField(); i++{
+		field := myref.Field(i)
+		fmt.Printf("%d. %s %s = %v \n", i, typeOfType.Field(i).Name, field.Type(), field.Interface())
+	}
 	router.Router()
 }
 
