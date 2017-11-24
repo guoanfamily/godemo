@@ -3,21 +3,16 @@ package service
 import (
 	"fmt"
 	"encoding/json"
-	"godemo/common"
+	"goquestion/common"
 	"reflect"
 	"strings"
 	"strconv"
 )
 
-/**
- * 查询直接返回json结构数组
- * sql=执行sql
- * args=sql参数
- */
-func QuerybySql(sql string, args ...interface{}) []interface{} {
+func QuerybySql(sql string,args ...interface{}) []interface{}{
 	var retmaps []interface{}
-	rows, err := common.Db.Query(sql, args ...)
-	if (err != nil) {
+	rows,err:=common.Db.Query(sql,args ...)
+	if(err!=nil){
 		fmt.Println(err)
 	}
 	//延时关闭Rows
@@ -31,33 +26,29 @@ func QuerybySql(sql string, args ...interface{}) []interface{} {
 	for i := range values {
 		values[i] = new(interface{})
 	}
-	for rows.Next() {
+	for rows.Next(){
 		rows.Scan(values...)
 		v := make(map[string]interface{})
-		for i := range values {
-			v[columns[i]] = fmt.Sprintf("%s", *(values[i].(*interface{})))
+		for i:= range values{
+			v[columns[i]] =fmt.Sprintf("%s",*(values[i].(*interface{})))
 		}
 		retmaps = append(retmaps, v)
 	}
-	alldata, err := json.Marshal(retmaps)
+	alldata ,err:= json.Marshal(retmaps)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(string(alldata))
 	return retmaps
 }
-
 /**
  * 查询返回结构体数组
- * dict= 传入实体类数组地址
- * sql=执行sql
- * args=sql参数
  */
-func Query(dict interface{}, sql string, args ...interface{}) error {
+func Query(dict interface{},sql string,args...interface{}) error{
 	structArray := reflect.ValueOf(dict).Elem() //传入值为结构化数组指针，需获取他的值&[]user
 
-	rows, err := common.Db.Query(sql, args ...)
-	if (err != nil) {
+	rows,err:=common.Db.Query(sql,args ...)
+	if(err!=nil){
 		return err
 	}
 	//延时关闭Rows
@@ -71,32 +62,33 @@ func Query(dict interface{}, sql string, args ...interface{}) error {
 	for i := range values {
 		values[i] = new(interface{})
 	}
-	for rows.Next() {
+	for rows.Next(){
 		rows.Scan(values...)
-		var dictStruct = reflect.New(structArray.Type().Elem()) //UserRole
+		var dictStruct = reflect.New(structArray.Type().Elem())
 		//进行数据库返回结果到struct的映射转换,目前统一影射为string,待增加类型映射
-		for i := range values {
-			structName := strFirstToUpper(columns[i]) //Username
-			sv := dictStruct.Elem().FieldByName(structName) //userrole.Username
-			rv := *(values[i].(*interface{}))
-			FilterDbValue(sv, rv)
+		for i:= range values{
+			structName := strFirstToUpper(columns[i])
+			fmt.Println(structName)
+			sv := dictStruct.Elem().FieldByName(structName)
+
+			rv :=*(values[i].(*interface{}))
+			fmt.Println(rv)
+			fmt.Println(sv)
+			//var structValue string
+			FilterDbValue(sv,rv)
+			//if rv :=*(values[i].(*interface{}));rv!=nil {
+			//	structValue = fmt.Sprintf("%s",rv)
+			//}else {
+			//	structValue = ""
+			//}
+			//dictStruct.Elem().FieldByName(structName).
 		}
-		structArray.Set(reflect.Append(structArray, dictStruct.Elem()))
+		structArray.Set(reflect.Append(structArray,dictStruct.Elem()))
 	}
 	return nil
 }
 
-func Saves() {
 
-}
-func update(){
-
-}
-func insert(dest interface{}){
-	var id string
-	id="1 or 1=1"
-	common.Db.MustExec("select * from user where id=?",id)
-}
 /**
  * 字符串首字母转化为大写 ios_bbbbbbbb -> IosBbbbbbbbb
  */
@@ -116,68 +108,77 @@ func strFirstToUpper(str string) string {
 	}
 	return upperStr
 }
-
 /*
 数据库类型映射
  */
-func FilterDbValue(sv reflect.Value, rv interface{}) error {
+func FilterDbValue(sv reflect.Value,rv interface{}) error {
 	valueType := sv.Type()
 	fmt.Println(valueType.Kind())
 	switch valueType.Kind() {
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		if rv == nil {
+	case reflect.Int,reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		if  rv== nil {
 			sv.SetInt(0)
-		} else {
+		}else{
 			value := reflect.ValueOf(rv)
-			str := byteString(value.Bytes())
-			ivalue, err := strconv.Atoi(str)
-			if err != nil {
-				panic(err)
+			if value.Type().Name()=="int64" {
+				sv.SetInt(value.Int())
+			}else{
+				str :=byteString(value.Bytes())
+				fmt.Println(str)
+				ivalue,err := strconv.Atoi(str)
+				if err!=nil{
+					panic(err)
+				}
+				sv.SetInt(int64(ivalue))
 			}
-			sv.SetInt(int64(ivalue))
 		}
 	case reflect.Float32, reflect.Float64:
-		if rv == nil {
+		if  rv== nil {
 			sv.SetFloat(0)
-		} else {
+		}else{
 			value := reflect.ValueOf(rv)
-			str := byteString(value.Bytes())
-			fvalue, err := strconv.ParseFloat(str, 64)
-			if err != nil {
+			str :=byteString(value.Bytes())
+			fvalue,err := strconv.ParseFloat(str,64)
+			if err!=nil{
 				panic(err)
 			}
 			sv.SetFloat(fvalue)
 		}
 	case reflect.String:
-		if rv == nil {
+		if  rv== nil {
 			sv.SetString("")
-		} else {
+		}else{
 			value := reflect.ValueOf(rv)
 			sv.SetString(string(value.Bytes()))
 		}
 	case reflect.Bool:
-		if rv == nil {
+		if  rv== nil {
 			sv.SetBool(false)
-		} else {
+		}else{
 			value := reflect.ValueOf(rv)
 			b := value.Bytes()[0]
-			if b == 0 || b == 48 {
+			if b==0 || b==48{
 				sv.SetBool(false)
-			} else {
+			}else{
 				sv.SetBool(true)
 			}
 		}
 	case reflect.Struct:
-		if rv!=nil{
+		if  rv== nil {
+			//sv.Set(nil)
+
+		}else{
 			value := reflect.ValueOf(rv)
 			sv.Set(value)
 		}
 	}
 	return nil
 }
-/*
-字节转字符串，防止0问题
- */
+
+
+
+
+
 func byteString(p []byte) string {
 	for i := 0; i < len(p); i++ {
 		if p[i] == 0 {
