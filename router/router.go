@@ -22,6 +22,7 @@ func Router(){
 	e.GET("/select",controller.SelectPersion)
 	e.GET("/query",controller.Query)
 	e.GET("/find",controller.Find)
+	e.GET("/del",controller.Delete)
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
 }

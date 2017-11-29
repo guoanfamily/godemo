@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/jmoiron/sqlx"
+	"github.com/guoanfamily/sqlx"
 	"github.com/go-redis/redis"
 )
 

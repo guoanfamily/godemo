@@ -29,10 +29,12 @@ func SelectPersion(c echo.Context) error{
 	//接收参数，题目id
 	//随机生成候选人
 	//调用ws发送大屏幕候选人
+	name :=c.QueryParam("name")
+	fmt.Println(name)
 	for cs, na := range ActiveClients {
 		if na != "" {
 			timestr:= time.Now().Format("2006-01-02 15:04:05")
-			if err := Message.Send(cs.websocket,timestr+"[]"+ cs.clientIP); err != nil {
+			if err := Message.Send(cs.websocket,timestr+"[]"+ cs.clientIP+name); err != nil {
 				log.Println("Could not send message to ", cs.clientIP, err.Error())
 			}
 		}
@@ -53,7 +55,7 @@ func Hello(c echo.Context) error {
 		client := ws.Request().RemoteAddr
 		log.Println("Client connected:", client)
 		sockCli := ClientConn{ws, client}
-		ActiveClients[sockCli] = ""
+		ActiveClients[sockCli] = "a"
 		log.Println("Number of clients connected:", len(ActiveClients))
 
 		for {

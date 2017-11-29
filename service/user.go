@@ -4,10 +4,7 @@ import (
 	"time"
 	"godemo/common"
 	"fmt"
-	//"database/sql"
 	"database/sql"
-	//"reflect"
-	//"encoding/json"
 )
 
 type SubObject struct {
@@ -15,7 +12,7 @@ type SubObject struct {
 	Id string
 }
 
-type User struct {
+type Usertable struct {
 	SubObject
 	Name         string
 	Username     string
@@ -48,11 +45,23 @@ type UserRole struct {
 	CreateTime time.Time
 }
 
+func DeleteUser() bool{
+	var user Usertable
+	user.Id = "1"
+	common.Db.Delete(&user)
+
+	return true
+}
+func QueryUserTable() interface{}{
+	sql := "select * from usertable"
+	return common.Db.QuerybySql(sql)
+}
 func Select() []UserRole{
 
 	sql := "select u.`name` username,u.sex sex,u.status status,r.`name` rolename,u.create_time create_time from usertable u LEFT JOIN user_role ur on u.id= ur.user_id LEFT JOIN role r on ur.role_id=r.id"
 	var userroles []UserRole
-	Query(&userroles,sql)
+
+	common.Db.QueryStruct(&userroles,sql)
 
 	return userroles
 }

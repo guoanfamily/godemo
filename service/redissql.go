@@ -25,7 +25,7 @@ func CacheSelect(dest interface{}, query string, args ...interface{}){
 			redisValue, _ := common.Rds.HGet(firstTableName, haskeystr).Bytes()
 			json.Unmarshal(redisValue, dest)
 		}else {
-			Query(dest, query, args ...)
+			common.Db.QueryStruct(dest, query, args ...)
 			//set redis value
 			jsonValue, _ := json.Marshal(dest)
 			common.Rds.HSet(firstTableName, haskeystr, jsonValue)
